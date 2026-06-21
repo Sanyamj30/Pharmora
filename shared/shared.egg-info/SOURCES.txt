@@ -1,0 +1,12 @@
+setup.py
+shared/__init__.py
+shared/auth.py
+shared/database.py
+shared/errors.py
+shared/kafka.py
+shared/logging.py
+shared.egg-info/PKG-INFO
+shared.egg-info/SOURCES.txt
+shared.egg-info/dependency_links.txt
+shared.egg-info/requires.txt
+shared.egg-info/top_level.txt
