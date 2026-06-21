@@ -15,6 +15,15 @@ if DATABASE_URL.startswith("postgresql://"):
 elif DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+asyncpg://", 1)
 
+# Handle sslmode compatibility for asyncpg
+ssl_required = False
+if "sslmode" in DATABASE_URL:
+    ssl_required = True
+    from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode
+    u = urlparse(DATABASE_URL)
+    q = parse_qsl(u.query)
+    q = [(k, v) for k, v in q if k != 'sslmode']
+    DATABASE_URL = urlunparse(u._replace(query=urlencode(q)))
 
 # Database connection pool configuration
 DB_POOL_SIZE = int(os.getenv("DB_POOL_SIZE", "10"))
@@ -29,6 +38,9 @@ engine_kwargs = {
     "pool_pre_ping": True,
     "future": True
 }
+if ssl_required:
+    engine_kwargs["connect_args"] = {"ssl": True}
+
 # SQLite does not support pool_size or max_overflow
 if not DATABASE_URL.startswith("sqlite"):
     engine_kwargs["pool_size"] = DB_POOL_SIZE

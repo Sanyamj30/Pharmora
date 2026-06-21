@@ -62,6 +62,16 @@ async def run_migrations_online() -> None:
     elif url.startswith("postgres://"):
         url = url.replace("postgres://", "postgresql+asyncpg://", 1)
         
+    # Handle sslmode compatibility for asyncpg
+    ssl_required = False
+    if "sslmode" in url:
+        ssl_required = True
+        from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode
+        u = urlparse(url)
+        q = parse_qsl(u.query)
+        q = [(k, v) for k, v in q if k != 'sslmode']
+        url = urlunparse(u._replace(query=urlencode(q)))
+
     configuration = config.get_section(config.config_ini_section) or {}
     configuration["sqlalchemy.url"] = url
 
@@ -70,6 +80,7 @@ async def run_migrations_online() -> None:
         configuration,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
+        connect_args={"ssl": True} if ssl_required else {}
     )
 
     async with connectable.connect() as connection:
