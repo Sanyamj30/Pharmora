@@ -1,6 +1,0 @@
-fastapi
-pydantic
-pyjwt
-loguru
-sqlalchemy
-confluent-kafka
