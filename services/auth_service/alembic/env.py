@@ -56,8 +56,15 @@ async def run_migrations_online() -> None:
         "postgresql+asyncpg://postgres:postgrespassword@localhost:5432/pharmora_auth"
     )
     
+    # Enforce async driver for PostgreSQL
+    if url.startswith("postgresql://"):
+        url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
+    elif url.startswith("postgres://"):
+        url = url.replace("postgres://", "postgresql+asyncpg://", 1)
+        
     configuration = config.get_section(config.config_ini_section) or {}
     configuration["sqlalchemy.url"] = url
+
     
     connectable = async_engine_from_config(
         configuration,

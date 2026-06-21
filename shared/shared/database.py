@@ -4,11 +4,17 @@ from sqlalchemy.orm import DeclarativeBase
 from typing import AsyncGenerator
 from loguru import logger
 
-# Retrieve DB details from environment, default to postgres database for local dev
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
     "postgresql+asyncpg://postgres:postgrespassword@localhost:5432/postgres"
 )
+
+# Enforce async driver for PostgreSQL
+if DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
+elif DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+asyncpg://", 1)
+
 
 # Database connection pool configuration
 DB_POOL_SIZE = int(os.getenv("DB_POOL_SIZE", "10"))
