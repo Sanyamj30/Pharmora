@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { api } from '../services/api';
 
-export default function LoginView({ onLoginSuccess }) {
+export default function LoginView({ onLoginSuccess, onBackClick }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -57,6 +57,30 @@ export default function LoginView({ onLoginSuccess }) {
         }}></div>
 
         <div style={{ position: 'relative', zIndex: 1 }}>
+          {onBackClick && (
+            <button
+              onClick={onBackClick}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--text-secondary)',
+                cursor: 'pointer',
+                fontSize: '0.9rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                marginBottom: '24px',
+                padding: '0',
+                fontWeight: 500,
+                transition: 'var(--transition-smooth)'
+              }}
+              onMouseEnter={(e) => e.target.style.color = 'var(--text-primary)'}
+              onMouseLeave={(e) => e.target.style.color = 'var(--text-secondary)'}
+            >
+              ← Back to Homepage
+            </button>
+          )}
+
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
             <div style={{
               display: 'inline-flex',

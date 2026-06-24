@@ -81,9 +81,11 @@ graph TB
 | **SQLAlchemy 2.0 (Async)** | Database ORM | Provides modern async database operations (`AsyncSession`), prevents blocking database calls in FastAPI event loops, and manages complex relational database logic. |
 | **Pydantic v2** | Data validation & serialization | Fastest data parsing in Python, ensures request body validation, and manages config schemas cleanly. |
 | **SQLite (aiosqlite)** | Local database engine | Zero-configuration database for local development and testing, allowing fast, parallelizable, asynchronous unit tests. Easily maps to PostgreSQL in production. |
+| **PostgreSQL (asyncpg / psycopg2-binary)** | Production Database | High-performance, concurrent production database. The system automatically converts standard database URL schemes to `postgresql+asyncpg://` and supports `sslmode=require` query parameters for secure cloud connections. |
 | **Apache Kafka (Mocked)** | Message Broker | Decouples services asynchronously. For example, when a sale completes, the Sales service publishes an event to Kafka, and the Inventory service consumes it to deduct stock, avoiding direct HTTP coupling. |
 | **RS256 JWT** | Security mechanism | Cryptographically signed tokens (private key signature, public key verification) allow the API Gateway to verify credentials offline without querying the Auth database on every request. |
 | **Pytest & Hypothesis** | Testing frameworks | Combines standard unit/integration testing with property-based testing (fuzzing APIs with randomized inputs to detect edge-case failures). |
+| **Render & Vercel** | Hosting Platforms | Backend microservices and the API Gateway are deployed on Render (configured with auto-migration and `start.sh` entrypoint), and the React frontend is deployed on Vercel. |
 
 ---
 
@@ -121,6 +123,24 @@ If a pharmacist attempts a checkout:
 4. **Kafka Notification**: Emits sales events.
 - **Rollback Guarantee**: If any step fails (e.g., card payment fails or gateway disconnects), the transaction is completely rolled back, releasing any temporary stock locks.
 
+### 4.5 Clinical Overrides & Safety Clearances
+To balance safety and regulatory requirements with real-world clinical urgency:
+- If a prescription check flags a warning (e.g., potential drug interaction or dosage threshold), the system does not silently fail or hard-block checkouts in emergency cases.
+- Instead, the pharmacist can register a **Clinical Override** with detailed clinical justification.
+- Overrides are logged in the `clinical_overrides` audit table, linking the pharmacist's ID, prescription ID, and timestamp, satisfying compliance requirements while keeping checkouts fluid.
+
+### 4.6 Conversational BI Assistant & Row-Level Security
+The Finance Manager dashboard features a Conversational BI Assistant that allows querying store performance using natural language:
+- The system translates natural language queries into SQL database queries.
+- To prevent data leaks across regional boundaries, the API Gateway/Reporting layer enforces **Row-Level Security (RLS)** by parsing the user's regional and outlet scopes from their JWT and appending strict `WHERE` constraints to any dynamically generated SQL query before execution.
+- SQL execution logs and raw data tables are rendered transparently for auditing.
+
+### 4.7 Dynamic RSA Key Sync & Clock Drift Protection
+In development and deployment environments:
+- The Auth Service dynamically generates a secure RSA keypair (`jwt_private.pem` and `jwt_public.pem`) in the root workspace if not already present.
+- All microservices read these shared key files to verify RS256 signatures offline.
+- To prevent local system timezone issues or slight clock drifts across container hosts from invalidating active sessions, PyJWT is configured with clock-skew tolerance (`verify_exp` parameters are adjusted or offset during verification).
+
 ---
 
 ## 5. Summary of Verification & Test Suites
@@ -135,3 +155,13 @@ The project features a rigorous test suite consisting of **34 unit and integrati
 5. **Shared Utilities (`test_shared_utilities.py`)**: Tests core event serialization and Kafka producer/consumer mock functionality.
 
 All 34 tests execute asynchronously and pass without errors.
+
+---
+
+## 6. Production Deployment Configuration
+
+Pharmora is configured for continuous deployment using Git-push integrations:
+1. **Frontend (Vercel)**: Deployed at `https://pharmorago.vercel.app/`. The React app builds from the `frontend/` subdirectory and communicates with the centralized API Gateway.
+2. **Backend (Render)**: All 4 microservices (Auth, Inventory, Sales, Gateway) are hosted on Render.
+   - **Unified Entrypoint (`start.sh`)**: A custom startup script handles service routing, runs database migrations automatically for the Auth service, and starts the Uvicorn servers.
+   - **Database Compatibility**: The shared database module automatically rewrites incoming database URLs to use the async-compatible `postgresql+asyncpg://` protocol and injects secure SSL connection parameters (`sslmode=require`) to support cloud-hosted PostgreSQL instances.

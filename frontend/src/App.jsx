@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
+import LandingView from './components/LandingView';
 import LoginView from './components/LoginView';
 import DashboardView from './components/DashboardView';
 import InventoryView from './components/InventoryView';
@@ -9,6 +10,7 @@ import { getAuthUser, clearAuth, api } from './services/api';
 
 function App() {
   const [user, setUser] = useState(getAuthUser());
+  const [viewMode, setViewMode] = useState('landing');
   const [activeView, setActiveView] = useState('dashboard');
   const [activeOutlet, setActiveOutlet] = useState('');
   const [alerts, setAlerts] = useState([]);
@@ -64,7 +66,10 @@ function App() {
   }, [activeOutlet]);
 
   if (!user) {
-    return <LoginView onLoginSuccess={handleLoginSuccess} />;
+    if (viewMode === 'landing') {
+      return <LandingView onLoginClick={() => setViewMode('login')} />;
+    }
+    return <LoginView onLoginSuccess={handleLoginSuccess} onBackClick={() => setViewMode('landing')} />;
   }
 
   return (
