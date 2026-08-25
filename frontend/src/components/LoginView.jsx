@@ -32,31 +32,21 @@ export default function LoginView({ onLoginSuccess, onBackClick }) {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      minHeight: '80vh',
-      padding: '24px'
+      minHeight: '100vh',
+      padding: '24px',
+      background: 'var(--bg-deep)'
     }}>
       <div className="glass-card animate-fade-in" style={{
         width: '100%',
-        maxWidth: '440px',
-        padding: '40px',
-        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)',
+        maxWidth: '420px',
+        padding: '36px',
+        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.08)',
         position: 'relative',
-        overflow: 'hidden'
+        background: '#ffffff',
+        border: '1px solid var(--border-color)',
+        borderRadius: '16px'
       }}>
-        {/* Glow decoration */}
-        <div style={{
-          position: 'absolute',
-          top: '-50px',
-          right: '-50px',
-          width: '150px',
-          height: '150px',
-          borderRadius: '50%',
-          background: 'rgba(99, 102, 241, 0.15)',
-          filter: 'blur(40px)',
-          zIndex: 0
-        }}></div>
-
-        <div style={{ position: 'relative', zIndex: 1 }}>
+        <div>
           {onBackClick && (
             <button
               onClick={onBackClick}
@@ -65,13 +55,13 @@ export default function LoginView({ onLoginSuccess, onBackClick }) {
                 border: 'none',
                 color: 'var(--text-secondary)',
                 cursor: 'pointer',
-                fontSize: '0.9rem',
+                fontSize: '0.88rem',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                marginBottom: '24px',
+                marginBottom: '20px',
                 padding: '0',
-                fontWeight: 500,
+                fontWeight: 600,
                 transition: 'var(--transition-smooth)'
               }}
               onMouseEnter={(e) => e.target.style.color = 'var(--text-primary)'}
@@ -81,41 +71,42 @@ export default function LoginView({ onLoginSuccess, onBackClick }) {
             </button>
           )}
 
-          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '28px' }}>
             <div style={{
               display: 'inline-flex',
               padding: '12px',
               borderRadius: '12px',
-              background: 'rgba(99, 102, 241, 0.1)',
-              border: '1px solid rgba(99, 102, 241, 0.2)',
-              marginBottom: '16px'
+              background: '#fffbeb',
+              border: '1px solid #fde68a',
+              marginBottom: '14px'
             }}>
-              <span style={{ fontSize: '2rem' }}>🔐</span>
+              <span style={{ fontSize: '1.8rem' }}>🔐</span>
             </div>
-            <h2 className="glow-text-primary" style={{ fontSize: '1.75rem', marginBottom: '8px' }}>
+            <h2 style={{ fontSize: '1.6rem', marginBottom: '6px', fontWeight: 800, color: '#0f172a' }}>
               Pharmora
             </h2>
-            <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+            <p style={{ fontSize: '0.88rem', color: '#64748b' }}>
               Operational Microservices Portal Login
             </p>
           </div>
 
           {error && (
             <div style={{
-              background: 'rgba(239, 68, 68, 0.1)',
-              border: '1px solid rgba(239, 68, 68, 0.2)',
+              background: '#fef2f2',
+              border: '1px solid #fecaca',
               borderRadius: '8px',
-              padding: '12px 16px',
-              color: 'var(--critical)',
-              fontSize: '0.85rem',
-              marginBottom: '20px',
-              lineHeight: 1.4
+              padding: '10px 14px',
+              color: '#dc2626',
+              fontSize: '0.82rem',
+              marginBottom: '18px',
+              lineHeight: 1.4,
+              fontWeight: 500
             }}>
               ⚠️ {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
             <div className="premium-input-container">
               <label className="premium-label">Username</label>
               <input
@@ -143,7 +134,7 @@ export default function LoginView({ onLoginSuccess, onBackClick }) {
             <button
               type="submit"
               className="premium-btn premium-btn-primary"
-              style={{ width: '100%', marginTop: '8px', padding: '14px' }}
+              style={{ width: '100%', marginTop: '6px', padding: '12px' }}
               disabled={loading}
             >
               {loading ? 'Authenticating...' : 'Sign In'}
