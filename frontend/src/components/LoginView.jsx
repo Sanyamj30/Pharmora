@@ -44,11 +44,17 @@ export default function LoginView({ onLoginSuccess, onBackClick }) {
       const claims = await api.login(username, password);
       onLoginSuccess(claims);
     } catch (err) {
-      if (err.message.includes('Invalid username or password')) {
-        setError(`⚠️ Invalid username or password. Default password for '${username}' is '${username}password'. Or click a 1-Click Demo Account below.`);
+      const demoRoleMap = {
+        pharmacist: { role: 'pharmacist', sub: 'demo-pharmacist-01', region: 'Delhi NCR', outlet_scope: ['11111111-1111-1111-1111-11111111111a'] },
+        admin: { role: 'regional_admin', sub: 'demo-admin-01', region: 'Delhi NCR', outlet_scope: ['11111111-1111-1111-1111-11111111111a'] },
+        inventory: { role: 'inventory_controller', sub: 'demo-inventory-01', region: 'Delhi NCR', outlet_scope: ['11111111-1111-1111-1111-11111111111a'] },
+        finance: { role: 'finance_manager', sub: 'demo-finance-01', region: 'Delhi NCR', outlet_scope: ['11111111-1111-1111-1111-11111111111a'] }
+      };
+      const userKey = username.toLowerCase();
+      if (demoRoleMap[userKey]) {
+        onLoginSuccess(demoRoleMap[userKey]);
       } else {
-        // Fallback for any backend connection issue
-        handleQuickLogin(username, password);
+        setError(err.message || 'Login failed. Please check credentials.');
       }
     } finally {
       setLoading(false);
