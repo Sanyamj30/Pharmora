@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from './components/Navbar';
+import Sidebar from './components/Sidebar';
+import Header from './components/Header';
 import LandingView from './components/LandingView';
 import LoginView from './components/LoginView';
 import DashboardView from './components/DashboardView';
@@ -73,52 +74,59 @@ function App() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {/* Top Navigation */}
-      <Navbar
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-deep)' }}>
+      {/* Seedtrace Left Sidebar */}
+      <Sidebar
         activeView={activeView}
         setActiveView={setActiveView}
         user={user}
-        activeOutlet={activeOutlet}
-        setActiveOutlet={setActiveOutlet}
-        alerts={alerts}
         onLogout={handleLogout}
       />
 
-      {/* Main Workspace Container */}
-      <main style={{ flex: 1, padding: '0 24px 40px 24px', maxWidth: '1440px', width: '100%', margin: '0 auto' }}>
-        {activeView === 'dashboard' && (
-          <DashboardView
-            user={user}
-            activeOutlet={activeOutlet}
-            alerts={alerts}
-            setAlerts={setAlerts}
-            onScanComplete={refreshAlerts}
-          />
-        )}
+      {/* Main Workspace Column */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+        {/* Workspace Top Header */}
+        <Header
+          activeView={activeView}
+          activeOutlet={activeOutlet}
+          setActiveOutlet={setActiveOutlet}
+          user={user}
+          alerts={alerts}
+        />
 
-        {activeView === 'inventory' && (
-          <InventoryView
-            activeOutlet={activeOutlet}
-            triggerRefreshAlerts={refreshAlerts}
-          />
-        )}
+        {/* Content Area */}
+        <main style={{ flex: 1, padding: '28px 32px', maxWidth: '1600px', width: '100%', margin: '0 auto' }}>
+          {activeView === 'dashboard' && (
+            <DashboardView
+              user={user}
+              activeOutlet={activeOutlet}
+              alerts={alerts}
+              setAlerts={setAlerts}
+              onScanComplete={refreshAlerts}
+            />
+          )}
 
-        {activeView === 'sales' && (
-          <SalesView
-            activeOutlet={activeOutlet}
-            triggerRefreshAlerts={refreshAlerts}
-          />
-        )}
+          {activeView === 'inventory' && (
+            <InventoryView
+              activeOutlet={activeOutlet}
+              triggerRefreshAlerts={refreshAlerts}
+            />
+          )}
 
-        {activeView === 'prescriptions' && (
-          <PrescriptionView
-            activeOutlet={activeOutlet}
-          />
-        )}
-      </main>
+          {activeView === 'sales' && (
+            <SalesView
+              activeOutlet={activeOutlet}
+              triggerRefreshAlerts={refreshAlerts}
+            />
+          )}
 
-
+          {activeView === 'prescriptions' && (
+            <PrescriptionView
+              activeOutlet={activeOutlet}
+            />
+          )}
+        </main>
+      </div>
     </div>
   );
 }
