@@ -91,7 +91,7 @@ export default function FinanceManagerDashboard({
             Gross Sales Revenue
           </span>
           <h1 className="glow-text-success" style={{ fontSize: '2.5rem', margin: '12px 0 4px 0', color: 'var(--success)' }}>
-            ${(14250.0 + sessionSalesTotal).toFixed(2)}
+            ₹{(14250.0 + sessionSalesTotal).toFixed(2)}
           </h1>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
             दिल्ली region sales total
@@ -104,7 +104,7 @@ export default function FinanceManagerDashboard({
             Cost of Goods Sold (COGS)
           </span>
           <h1 className="glow-text-teal" style={{ fontSize: '2.5rem', margin: '12px 0 4px 0', color: 'var(--accent-teal)' }}>
-            ${((14250.0 + sessionSalesTotal) * 0.65).toFixed(2)}
+            ₹{((14250.0 + sessionSalesTotal) * 0.65).toFixed(2)}
           </h1>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
             Estimated inventory acquisition cost
@@ -130,7 +130,7 @@ export default function FinanceManagerDashboard({
             Average Ticket Value
           </span>
           <h1 className="glow-text-teal" style={{ fontSize: '2.5rem', margin: '12px 0 4px 0', color: 'var(--accent-teal)' }}>
-            $42.50
+            ₹42.50
           </h1>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
             AOV per billing register invoice
@@ -335,27 +335,27 @@ export default function FinanceManagerDashboard({
               <tr>
                 <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>INV-89F12B</td>
                 <td>Delhi Central</td>
-                <td style={{ fontWeight: 600 }}>$185.00</td>
-                <td>$9.25</td>
-                <td>$0.00</td>
+                <td style={{ fontWeight: 600 }}>₹185.00</td>
+                <td>₹9.25</td>
+                <td>₹0.00</td>
                 <td>Just Now</td>
                 <td><span className="premium-badge badge-success">COMPLETED</span></td>
               </tr>
               <tr>
                 <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>INV-9A23E4</td>
                 <td>Delhi Central</td>
-                <td style={{ fontWeight: 600 }}>$420.00</td>
-                <td>$21.00</td>
-                <td>$10.00</td>
+                <td style={{ fontWeight: 600 }}>₹420.00</td>
+                <td>₹21.00</td>
+                <td>₹10.00</td>
                 <td>10 mins ago</td>
                 <td><span className="premium-badge badge-success">COMPLETED</span></td>
               </tr>
               <tr>
                 <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>INV-3B104F</td>
                 <td>Gurugram Store</td>
-                <td style={{ fontWeight: 600 }}>$310.00</td>
-                <td>$15.50</td>
-                <td>$5.00</td>
+                <td style={{ fontWeight: 600 }}>₹310.00</td>
+                <td>₹15.50</td>
+                <td>₹5.00</td>
                 <td>25 mins ago</td>
                 <td><span className="premium-badge badge-success">COMPLETED</span></td>
               </tr>

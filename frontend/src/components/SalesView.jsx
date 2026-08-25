@@ -246,7 +246,7 @@ export default function SalesView({ activeOutlet, triggerRefreshAlerts }) {
       setPromoSuccess('Promo HEALTH20 applied (20% discount)!');
     } else if (upperCode === 'LIFESAVER') {
       setAppliedPromo({ code: 'LIFESAVER', type: 'flat', value: 15.0 });
-      setPromoSuccess('Promo LIFESAVER applied ($15.00 flat discount)!');
+      setPromoSuccess('Promo LIFESAVER applied (₹150.00 flat discount)!');
     } else {
       setPromoError('Invalid promotion or coupon code.');
       setAppliedPromo(null);
@@ -527,7 +527,7 @@ export default function SalesView({ activeOutlet, triggerRefreshAlerts }) {
                   />
                 </div>
                 <div className="premium-input-container">
-                  <label className="premium-label">Unit Price ($)</label>
+                  <label className="premium-label">Unit Price (₹)</label>
                   <input
                     type="number"
                     step="0.01"
@@ -604,10 +604,9 @@ export default function SalesView({ activeOutlet, triggerRefreshAlerts }) {
                       <tr key={index}>
                         <td style={{ fontWeight: 600 }}>{item.product_name}</td>
                         <td style={{ fontFamily: 'var(--font-mono)' }}>{item.sku_code}</td>
-                        <td>#{item.batch_number}</td>
                         <td>{item.quantity}</td>
-                        <td>${item.unit_price.toFixed(2)}</td>
-                        <td style={{ fontWeight: 'bold' }}>${(item.quantity * item.unit_price).toFixed(2)}</td>
+                        <td>₹{item.unit_price.toFixed(2)}</td>
+                        <td style={{ fontWeight: 'bold' }}>₹{(item.quantity * item.unit_price).toFixed(2)}</td>
                         <td>
                           {item.prescription_ref ? (
                             <span className="premium-badge badge-success" style={{ fontSize: '0.7rem' }}>
@@ -648,12 +647,12 @@ export default function SalesView({ activeOutlet, triggerRefreshAlerts }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.95rem' }}>
               <span style={{ color: 'var(--text-secondary)' }}>Subtotal:</span>
-              <span style={{ fontWeight: 600 }}>${subtotal.toFixed(2)}</span>
+              <span style={{ fontWeight: 600 }}>₹{subtotal.toFixed(2)}</span>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.95rem' }}>
               <span style={{ color: 'var(--text-secondary)' }}>Tax (12% medical tax):</span>
-              <span style={{ fontWeight: 600 }}>${taxAmount.toFixed(2)}</span>
+              <span style={{ fontWeight: 600 }}>₹{taxAmount.toFixed(2)}</span>
             </div>
 
             {/* Loyalty Lookup & Deductions */}
@@ -669,13 +668,14 @@ export default function SalesView({ activeOutlet, triggerRefreshAlerts }) {
                 />
                 <button
                   type="button"
-                  onClick={handleLoyaltyLookup}
+                  onClick={handleCheckLoyalty}
                   className="premium-btn premium-btn-secondary"
                   style={{ padding: '8px 16px', fontSize: '0.85rem' }}
                 >
                   Lookup
                 </button>
               </div>
+
               {loyaltyProfile && (
                 <div style={{
                   marginTop: '6px',
@@ -691,7 +691,7 @@ export default function SalesView({ activeOutlet, triggerRefreshAlerts }) {
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px' }}>
                     <span>Available Points: {loyaltyProfile.points}</span>
-                    <span>Value: ${(loyaltyProfile.points * 0.1).toFixed(2)}</span>
+                    <span>Value: ₹{(loyaltyProfile.points * 0.1).toFixed(2)}</span>
                   </div>
                   {loyaltyProfile.points > 0 && (
                     <label style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px', cursor: 'pointer' }}>
@@ -710,7 +710,7 @@ export default function SalesView({ activeOutlet, triggerRefreshAlerts }) {
             {loyaltyDiscount > 0 && (
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.95rem', color: 'var(--success)' }}>
                 <span>Loyalty Points Discount:</span>
-                <span>-${loyaltyDiscount.toFixed(2)}</span>
+                <span>-₹{loyaltyDiscount.toFixed(2)}</span>
               </div>
             )}
 
@@ -761,7 +761,7 @@ export default function SalesView({ activeOutlet, triggerRefreshAlerts }) {
                 border: '1px dashed rgba(16, 185, 129, 0.2)'
               }}>
                 <span>Discount ({appliedPromo?.code}):</span>
-                <span style={{ fontWeight: 600 }}>-${calculatedDiscount.toFixed(2)}</span>
+                <span style={{ fontWeight: 600 }}>-₹{calculatedDiscount.toFixed(2)}</span>
               </div>
             )}
 
@@ -783,7 +783,7 @@ export default function SalesView({ activeOutlet, triggerRefreshAlerts }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.2rem' }}>
               <span style={{ fontWeight: 'bold' }}>Grand Total:</span>
               <span className="glow-text-primary" style={{ fontWeight: 800, color: 'var(--primary)', fontSize: '1.4rem' }}>
-                ${totalAmount.toFixed(2)}
+                ₹{totalAmount.toFixed(2)}
               </span>
             </div>
 
@@ -875,9 +875,9 @@ export default function SalesView({ activeOutlet, triggerRefreshAlerts }) {
                       <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Batch: #{item.batch_number || 'AUTO'}</span>
                     </td>
                     <td style={{ padding: '8px 0', textAlign: 'center', color: '#334155' }}>{item.quantity}</td>
-                    <td style={{ padding: '8px 0', textAlign: 'right', color: '#334155' }}>${item.unit_price.toFixed(2)}</td>
+                    <td style={{ padding: '8px 0', textAlign: 'right', color: '#334155' }}>₹{item.unit_price.toFixed(2)}</td>
                     <td style={{ padding: '8px 0', textAlign: 'right', fontWeight: 600, color: '#0f172a' }}>
-                      ${(item.quantity * item.unit_price).toFixed(2)}
+                      ₹{(item.quantity * item.unit_price).toFixed(2)}
                     </td>
                   </tr>
                 ))}
@@ -888,21 +888,21 @@ export default function SalesView({ activeOutlet, triggerRefreshAlerts }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', borderTop: '2px dashed #cbd5e1', paddingTop: '16px', fontSize: '0.9rem', color: '#334155', marginBottom: '24px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span>Subtotal:</span>
-                <span>${activeInvoice.subtotal.toFixed(2)}</span>
+                <span>₹{activeInvoice.subtotal.toFixed(2)}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span>Tax:</span>
-                <span>${activeInvoice.tax_amount.toFixed(2)}</span>
+                <span>₹{activeInvoice.tax_amount.toFixed(2)}</span>
               </div>
               {activeInvoice.discount_amount > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: '#b91c1c' }}>
                   <span>Discount:</span>
-                  <span>-${activeInvoice.discount_amount.toFixed(2)}</span>
+                  <span>-₹{activeInvoice.discount_amount.toFixed(2)}</span>
                 </div>
               )}
               <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 800, fontSize: '1.1rem', color: '#0f172a', paddingTop: '8px', borderTop: '1px solid #e2e8f0' }}>
                 <span>Total Paid:</span>
-                <span>${activeInvoice.total_amount.toFixed(2)}</span>
+                <span>₹{activeInvoice.total_amount.toFixed(2)}</span>
               </div>
             </div>
 
@@ -922,7 +922,7 @@ export default function SalesView({ activeOutlet, triggerRefreshAlerts }) {
                 <div>Points Earned on Sale: +{activeInvoice.loyalty_points_earned}</div>
                 <div>New Points Balance: {activeInvoice.loyalty_points_balance}</div>
                 {activeInvoice.loyalty_discount > 0 && (
-                  <div style={{ color: '#059669', fontWeight: 600, marginTop: '4px' }}>Points Redeemed Discount: -${activeInvoice.loyalty_discount.toFixed(2)}</div>
+                  <div style={{ color: '#059669', fontWeight: 600, marginTop: '4px' }}>Points Redeemed Discount: -₹{activeInvoice.loyalty_discount.toFixed(2)}</div>
                 )}
               </div>
             )}

@@ -176,7 +176,7 @@ export default function RegionalAdminDashboard({
                   fill="var(--text-primary)"
                   fontWeight="600"
                 >
-                  ${p.amount.toFixed(0)}
+                  ₹{p.amount.toFixed(0)}
                 </text>
               </g>
             ))}

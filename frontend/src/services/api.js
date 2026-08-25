@@ -201,9 +201,9 @@ function getOfflineMockResponse(endpoint, options = {}) {
       query: 'Sales overview',
       columns: ['Outlet', 'Total Sales', 'Orders', 'Margin'],
       results: [
-        ['Delhi NCR Hub', '$45,820.50', 340, '24.5%'],
-        ['Noida Sector 62', '$28,400.00', 215, '22.1%'],
-        ['Gurgaon Cyber City', '$36,150.25', 280, '25.8%']
+        ['Delhi NCR Hub', '₹45,820.50', 340, '24.5%'],
+        ['Noida Sector 62', '₹28,400.00', 215, '22.1%'],
+        ['Gurgaon Cyber City', '₹36,150.25', 280, '25.8%']
       ]
     };
   }

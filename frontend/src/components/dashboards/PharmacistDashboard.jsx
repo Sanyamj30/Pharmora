@@ -195,7 +195,7 @@ export default function PharmacistDashboard({
             POS Register Session
           </span>
           <h1 className="glow-text-success" style={{ fontSize: '2.5rem', margin: '12px 0 4px 0', color: 'var(--success)' }}>
-            ${(185.0 + sessionSalesTotal).toFixed(2)}
+            ₹{(185.0 + sessionSalesTotal).toFixed(2)}
           </h1>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
             Billing total for current register drawer
@@ -339,7 +339,7 @@ export default function PharmacistDashboard({
               <g key={i}>
                 <circle cx={p.x} cy={p.y} r="5" fill="var(--bg-deep)" stroke="var(--primary)" strokeWidth="3" />
                 <text x={p.x} y={p.y - 12} textAnchor="middle" fontSize="10px" fill="var(--text-primary)" fontWeight="600">
-                  ${p.amount.toFixed(0)}
+                  ₹{p.amount.toFixed(0)}
                 </text>
               </g>
             ))}
