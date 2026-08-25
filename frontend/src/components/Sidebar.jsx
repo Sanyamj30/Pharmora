@@ -1,12 +1,13 @@
 import React from 'react';
 
 export default function Sidebar({ activeView, setActiveView, user, onLogout, mobileOpen, setMobileOpen }) {
+  const userRole = (user?.role || '').toLowerCase();
   const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: '📊', roles: ['regional_admin', 'pharmacist', 'inventory_controller', 'finance_manager'] },
-    { id: 'inventory', label: 'Inventory', icon: '📦', roles: ['regional_admin', 'inventory_controller'] },
-    { id: 'sales', label: 'Sales POS', icon: '💳', roles: ['regional_admin', 'pharmacist'] },
-    { id: 'prescriptions', label: 'Prescriptions', icon: '💊', roles: ['regional_admin', 'pharmacist'] }
-  ].filter(tab => tab.roles.includes(user?.role || 'regional_admin'));
+    { id: 'dashboard', label: 'Dashboard', icon: '📊', roles: ['regional_admin', 'pharmacist', 'inventory_controller', 'finance_manager', 'admin', 'inventory', 'finance'] },
+    { id: 'inventory', label: 'Inventory', icon: '📦', roles: ['regional_admin', 'inventory_controller', 'admin', 'inventory'] },
+    { id: 'sales', label: 'Sales POS', icon: '💳', roles: ['regional_admin', 'pharmacist', 'admin'] },
+    { id: 'prescriptions', label: 'Prescriptions', icon: '💊', roles: ['regional_admin', 'pharmacist', 'admin'] }
+  ].filter(tab => tab.roles.some(r => userRole.includes(r) || r.includes(userRole) || userRole === 'admin' || userRole === 'regional_admin'));
 
   const handleNavClick = (id) => {
     setActiveView(id);

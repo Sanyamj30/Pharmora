@@ -124,69 +124,80 @@ export default function DashboardView({ user, activeOutlet, alerts, setAlerts, o
     );
   }
 
-  // Switch based on user role
-  switch (user?.role) {
-    case 'regional_admin':
-      return (
-        <RegionalAdminDashboard
-          user={user}
-          activeOutlet={activeOutlet}
-          lowStockCount={lowStockCount}
-          criticalExpiries={criticalExpiries}
-          warningExpiries={warningExpiries}
-          scanning={scanning}
-          scanResult={scanResult}
-          handleTriggerScan={handleTriggerScan}
-          expiryAlerts={expiryAlerts}
-          trendData={trendData}
-          points={points}
-          areaPath={areaPath}
-          linePath={linePath}
-          maxAmount={maxAmount}
-        />
-      );
-    case 'pharmacist':
-      return (
-        <PharmacistDashboard
-          user={user}
-          activeOutlet={activeOutlet}
-          sessionSalesTotal={sessionSalesTotal}
-          points={points}
-          areaPath={areaPath}
-          linePath={linePath}
-          trendData={trendData}
-        />
-      );
-    case 'inventory_controller':
-      return (
-        <InventoryControllerDashboard
-          user={user}
-          activeOutlet={activeOutlet}
-          lowStockCount={lowStockCount}
-          criticalExpiries={criticalExpiries}
-          warningExpiries={warningExpiries}
-          scanning={scanning}
-          scanResult={scanResult}
-          handleTriggerScan={handleTriggerScan}
-          expiryAlerts={expiryAlerts}
-        />
-      );
-    case 'finance_manager':
-      return (
-        <FinanceManagerDashboard
-          user={user}
-          activeOutlet={activeOutlet}
-          sessionSalesTotal={sessionSalesTotal}
-        />
-      );
-    default:
-      return (
-        <div className="glass-card" style={{ textAlign: 'center', padding: '40px' }}>
-          <h3 style={{ color: 'var(--critical)' }}>⚠️ Role Unauthorized</h3>
-          <p style={{ marginTop: '10px' }}>
-            Your account role "<strong>{user?.role}</strong>" does not have an operational dashboard configured. Please contact the administrator.
-          </p>
-        </div>
-      );
+  // Robust role matching supporting both short and full role names
+  const role = (user?.role || '').toLowerCase();
+
+  if (role.includes('admin')) {
+    return (
+      <RegionalAdminDashboard
+        user={user}
+        activeOutlet={activeOutlet}
+        lowStockCount={lowStockCount}
+        criticalExpiries={criticalExpiries}
+        warningExpiries={warningExpiries}
+        scanning={scanning}
+        scanResult={scanResult}
+        handleTriggerScan={handleTriggerScan}
+        expiryAlerts={expiryAlerts}
+        trendData={trendData}
+        points={points}
+        areaPath={areaPath}
+        linePath={linePath}
+        maxAmount={maxAmount}
+      />
+    );
   }
+
+  if (role.includes('pharmacist')) {
+    return (
+      <PharmacistDashboard
+        user={user}
+        activeOutlet={activeOutlet}
+        sessionSalesTotal={sessionSalesTotal}
+        points={points}
+        areaPath={areaPath}
+        linePath={linePath}
+        trendData={trendData}
+      />
+    );
+  }
+
+  if (role.includes('inventory')) {
+    return (
+      <InventoryControllerDashboard
+        user={user}
+        activeOutlet={activeOutlet}
+        lowStockCount={lowStockCount}
+        criticalExpiries={criticalExpiries}
+        warningExpiries={warningExpiries}
+        scanning={scanning}
+        scanResult={scanResult}
+        handleTriggerScan={handleTriggerScan}
+        expiryAlerts={expiryAlerts}
+      />
+    );
+  }
+
+  if (role.includes('finance')) {
+    return (
+      <FinanceManagerDashboard
+        user={user}
+        activeOutlet={activeOutlet}
+        sessionSalesTotal={sessionSalesTotal}
+      />
+    );
+  }
+
+  // Fallback to Pharmacist/General Dashboard if role is unrecognized
+  return (
+    <PharmacistDashboard
+      user={user}
+      activeOutlet={activeOutlet}
+      sessionSalesTotal={sessionSalesTotal}
+      points={points}
+      areaPath={areaPath}
+      linePath={linePath}
+      trendData={trendData}
+    />
+  );
 }
