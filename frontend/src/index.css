@@ -280,3 +280,38 @@ p {
 .animate-fade-in {
   animation: fadeInUp 0.25s ease-out forwards;
 }
+
+/* Responsive Mobile Drawer & Touch Rules */
+.mobile-hamburger-btn {
+  display: none;
+}
+.mobile-close-btn {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-hamburger-btn {
+    display: block !important;
+  }
+  .mobile-close-btn {
+    display: block !important;
+  }
+  .app-sidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    transform: translateX(-100%);
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.3);
+  }
+  .app-sidebar.mobile-open {
+    transform: translateX(0) !important;
+  }
+  .header-subtitle {
+    display: none;
+  }
+  .header-outlet-label {
+    display: none;
+  }
+}
+

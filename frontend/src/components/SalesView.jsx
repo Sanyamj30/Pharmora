@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
+import { useToast } from './Toast';
 
 export default function SalesView({ activeOutlet, triggerRefreshAlerts }) {
+  const toast = useToast();
   const [stockList, setStockList] = useState([]);
   const [cart, setCart] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState('CARD');
@@ -318,6 +320,7 @@ export default function SalesView({ activeOutlet, triggerRefreshAlerts }) {
       };
 
       setSuccess('Transaction completed successfully! Invoice generated.');
+      toast.success(`Transaction #${result.invoice_number || result.id.substring(0, 8)} Completed!`);
       setActiveInvoice(invoiceData);
       
       // Save session sale for dashboard trend

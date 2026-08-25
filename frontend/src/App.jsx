@@ -7,14 +7,16 @@ import DashboardView from './components/DashboardView';
 import InventoryView from './components/InventoryView';
 import SalesView from './components/SalesView';
 import PrescriptionView from './components/PrescriptionView';
+import { ToastProvider } from './components/Toast';
 import { getAuthUser, clearAuth, api } from './services/api';
 
-function App() {
+function AppContent() {
   const [user, setUser] = useState(getAuthUser());
   const [viewMode, setViewMode] = useState('landing');
   const [activeView, setActiveView] = useState('dashboard');
   const [activeOutlet, setActiveOutlet] = useState('');
   const [alerts, setAlerts] = useState([]);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   // Auto-redirect or handle expired session events
   useEffect(() => {
@@ -81,6 +83,8 @@ function App() {
         setActiveView={setActiveView}
         user={user}
         onLogout={handleLogout}
+        mobileOpen={mobileOpen}
+        setMobileOpen={setMobileOpen}
       />
 
       {/* Main Workspace Column */}
@@ -92,10 +96,12 @@ function App() {
           setActiveOutlet={setActiveOutlet}
           user={user}
           alerts={alerts}
+          mobileOpen={mobileOpen}
+          setMobileOpen={setMobileOpen}
         />
 
         {/* Content Area */}
-        <main style={{ flex: 1, padding: '28px 32px', maxWidth: '1600px', width: '100%', margin: '0 auto' }}>
+        <main style={{ flex: 1, padding: '24px 20px', maxWidth: '1600px', width: '100%', margin: '0 auto' }}>
           {activeView === 'dashboard' && (
             <DashboardView
               user={user}
@@ -131,4 +137,10 @@ function App() {
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <ToastProvider>
+      <AppContent />
+    </ToastProvider>
+  );
+}
