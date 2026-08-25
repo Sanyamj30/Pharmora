@@ -193,7 +193,7 @@ export default function LandingView({ onLoginClick }) {
             <span style={{ color: 'var(--accent-gold)' }}>Pharmacy Operations</span>
           </h1>
           <p style={{ fontSize: '1.1rem', color: '#475569', maxWidth: '580px', lineHeight: '1.65' }}>
-            Pharmora orchestrates retail pharmacy workflows across 180+ outlets and 12 state distribution hubs. Fully integrated with automated FEFO batch allocation, medical prescription verification, and zero-loss stock transfer enforcement.
+            Pharmora orchestrates enterprise retail pharmacy workflows across regional multi-branch hubs. Fully integrated with automated FEFO batch allocation, medical prescription verification, and zero-loss stock transfer enforcement.
           </p>
           <div style={{ display: 'flex', gap: '16px', marginTop: '8px' }}>
             <button onClick={onLoginClick} className="premium-btn premium-btn-primary" style={{ padding: '12px 28px', fontSize: '0.95rem' }}>
