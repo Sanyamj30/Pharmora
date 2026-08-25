@@ -261,38 +261,78 @@ export default function LandingView({ onLoginClick }) {
         </div>
       </section>
 
-      {/* Stats Counter Row */}
+      {/* High-Growth Tech Startup Live Stats Section */}
       <section style={{
         background: '#ffffff',
         borderTop: '1px solid var(--border-color)',
         borderBottom: '1px solid var(--border-color)',
         padding: '36px 0',
-        marginBottom: '60px'
+        marginBottom: '60px',
+        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.02)'
       }}>
         <div style={{
           maxWidth: '1280px',
           margin: '0 auto',
           padding: '0 24px',
           display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '24px',
-          textAlign: 'center'
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: '28px'
         }}>
-          <div>
-            <div style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--accent-teal)' }}>180+</div>
-            <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>Outlets Connected</div>
+          {/* Metric 1: Regional Hub Scopes */}
+          <div style={{ textAlign: 'left', paddingLeft: '16px', borderLeft: '3px solid var(--accent-gold)' }}>
+            <div style={{ fontSize: '2.1rem', fontWeight: 800, color: '#0f172a', lineHeight: 1 }}>
+              4 Outlets
+            </div>
+            <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#0f172a', marginTop: '6px' }}>
+              Active Regional Scopes
+            </div>
+            <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '2px' }}>
+              Delhi • Mumbai • BLR • Jaipur
+            </div>
           </div>
-          <div>
-            <div style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--accent-gold)' }}>12</div>
-            <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>Distribution Hubs</div>
+
+          {/* Metric 2: Live Gateway Latency */}
+          <div style={{ textAlign: 'left', paddingLeft: '16px', borderLeft: '3px solid var(--success)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '2.1rem', fontWeight: 800, color: '#0f172a', lineHeight: 1 }}>
+                {latency ? `${latency}ms` : '⚡ ~120ms'}
+              </span>
+              <span className="premium-badge badge-success" style={{ fontSize: '0.65rem', padding: '2px 8px' }}>
+                ● Live Ping
+              </span>
+            </div>
+            <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#0f172a', marginTop: '6px' }}>
+              Gateway Response Speed
+            </div>
+            <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '2px' }}>
+              Async FastAPI microservice routing
+            </div>
           </div>
-          <div>
-            <div style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--success)' }}>&lt; 200ms</div>
-            <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>Checkout Latency</div>
+
+          {/* Metric 3: Automated FEFO Compliance */}
+          <div style={{ textAlign: 'left', paddingLeft: '16px', borderLeft: '3px solid #0284c7' }}>
+            <div style={{ fontSize: '2.1rem', fontWeight: 800, color: '#0f172a', lineHeight: 1 }}>
+              100% FEFO
+            </div>
+            <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#0f172a', marginTop: '6px' }}>
+              Automated Batch Selection
+            </div>
+            <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '2px' }}>
+              Zero expired drug checkouts
+            </div>
           </div>
-          <div>
-            <div style={{ fontSize: '2.5rem', fontWeight: 800, color: '#6366f1' }}>100%</div>
-            <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>FEFO Compliance</div>
+
+          {/* Metric 4: Audit Security & Compliance */}
+          <div style={{ textAlign: 'left', paddingLeft: '16px', borderLeft: '3px solid #6366f1' }}>
+            <div style={{ fontSize: '2.1rem', fontWeight: 800, color: '#0f172a', lineHeight: 1 }}>
+              GxP Audited
+            </div>
+            <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#0f172a', marginTop: '6px' }}>
+              Schedule H/X Compliance
+            </div>
+            <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '2px' }}>
+              Digital autograph & override trail
+            </div>
           </div>
         </div>
       </section>
