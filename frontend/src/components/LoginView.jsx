@@ -140,6 +140,43 @@ export default function LoginView({ onLoginSuccess, onBackClick }) {
               {loading ? 'Authenticating...' : 'Sign In'}
             </button>
           </form>
+
+          {/* Quick Demo Login Credentials Buttons */}
+          <div style={{ marginTop: '24px', paddingTop: '20px', borderTop: '1px solid var(--border-color)' }}>
+            <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 700, marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              💡 Demo Accounts (1-Click Fill)
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+              <button 
+                type="button"
+                onClick={() => { setUsername('pharmacist'); setPassword('pharmacistpassword'); setError(''); }}
+                style={{ padding: '8px', fontSize: '0.78rem', borderRadius: '6px', border: '1px solid #e2e8f0', background: '#f8fafc', color: '#0f172a', cursor: 'pointer', fontWeight: 600 }}
+              >
+                Pharmacist
+              </button>
+              <button 
+                type="button"
+                onClick={() => { setUsername('admin'); setPassword('adminpassword'); setError(''); }}
+                style={{ padding: '8px', fontSize: '0.78rem', borderRadius: '6px', border: '1px solid #e2e8f0', background: '#f8fafc', color: '#0f172a', cursor: 'pointer', fontWeight: 600 }}
+              >
+                Admin
+              </button>
+              <button 
+                type="button"
+                onClick={() => { setUsername('inventory'); setPassword('inventorypassword'); setError(''); }}
+                style={{ padding: '8px', fontSize: '0.78rem', borderRadius: '6px', border: '1px solid #e2e8f0', background: '#f8fafc', color: '#0f172a', cursor: 'pointer', fontWeight: 600 }}
+              >
+                Inventory
+              </button>
+              <button 
+                type="button"
+                onClick={() => { setUsername('finance'); setPassword('financepassword'); setError(''); }}
+                style={{ padding: '8px', fontSize: '0.78rem', borderRadius: '6px', border: '1px solid #e2e8f0', background: '#f8fafc', color: '#0f172a', cursor: 'pointer', fontWeight: 600 }}
+              >
+                Finance
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

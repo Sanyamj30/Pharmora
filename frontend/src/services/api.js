@@ -89,8 +89,24 @@ async function request(endpoint, options = {}) {
     }
     
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      const errorMsg = errorData.detail || errorData.message || 'Request failed';
+      let errorMsg = '';
+      try {
+        const errorData = await response.json();
+        errorMsg = errorData.detail || errorData.message;
+      } catch (e) {
+        // Failed to parse JSON error
+      }
+      if (!errorMsg) {
+        if (response.status === 401) {
+          errorMsg = 'Invalid username or password';
+        } else if (response.status === 403) {
+          errorMsg = 'Access forbidden for this user role';
+        } else if (response.status === 404) {
+          errorMsg = 'Requested API endpoint not found';
+        } else {
+          errorMsg = `Server error (HTTP ${response.status})`;
+        }
+      }
       throw new Error(errorMsg);
     }
     
@@ -102,6 +118,9 @@ async function request(endpoint, options = {}) {
     return await response.json();
   } catch (err) {
     console.error(`API Error on ${endpoint}:`, err);
+    if (err.name === 'TypeError' || err.message === 'Failed to fetch') {
+      throw new Error('Unable to connect to backend server. Please verify your local server is running on http://localhost:8000');
+    }
     throw err;
   }
 }
