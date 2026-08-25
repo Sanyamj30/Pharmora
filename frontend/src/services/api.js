@@ -118,11 +118,89 @@ async function request(endpoint, options = {}) {
     return await response.json();
   } catch (err) {
     console.error(`API Error on ${endpoint}:`, err);
-    if (err.name === 'TypeError' || err.message === 'Failed to fetch') {
-      throw new Error('Unable to connect to backend server. Please verify your local server is running on http://localhost:8000');
+    if (err.name === 'TypeError' || err.message === 'Failed to fetch' || err.message.includes('Unable to connect')) {
+      console.warn(`[Pharmora Demo Mode] Backend server unreachable at ${API_BASE_URL}. Serving mock response for ${endpoint}`);
+      return getOfflineMockResponse(endpoint, options);
     }
     throw err;
   }
+}
+
+// Mock dataset generator when backend server is offline (e.g. live Vercel static preview)
+function getOfflineMockResponse(endpoint, options = {}) {
+  if (endpoint.includes('/auth/login')) {
+    let username = 'pharmacist';
+    try {
+      const body = JSON.parse(options.body || '{}');
+      if (body.username) username = body.username;
+    } catch (e) {}
+
+    const roleMap = {
+      admin: 'regional_admin',
+      pharmacist: 'pharmacist',
+      inventory: 'inventory_controller',
+      finance: 'finance_manager'
+    };
+    const role = roleMap[username.toLowerCase()] || 'pharmacist';
+    const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
+    const payload = btoa(JSON.stringify({
+      sub: "11111111-1111-1111-1111-11111111111a",
+      role: role,
+      region: "11111111-1111-1111-1111-11111111111a",
+      outlet_scope: ["11111111-1111-1111-1111-11111111111a"]
+    }));
+    const mockToken = `${header}.${payload}.mockSignature`;
+    return { access_token: mockToken, refresh_token: 'mock-refresh-token', expires_in: 3600 };
+  }
+
+  if (endpoint.includes('/stock') || endpoint.includes('/low-stock')) {
+    return [
+      { id: 'stk-1', product_id: 'p-1', total_quantity: 450, product: { id: 'p-1', sku_code: 'SKU-PARA-500', name: 'Paracetamol 500mg', category: 'Analgesic', schedule_class: 'N/A', unit_of_measure: 'box', reorder_point: 50 } },
+      { id: 'stk-2', product_id: 'p-2', total_quantity: 12, product: { id: 'p-2', sku_code: 'SKU-AMOX-250', name: 'Amoxicillin 250mg', category: 'Antibiotic', schedule_class: 'H', unit_of_measure: 'box', reorder_point: 30 } },
+      { id: 'stk-3', product_id: 'p-3', total_quantity: 85, product: { id: 'p-3', sku_code: 'SKU-MORPH-10', name: 'Morphine Sulfate 10mg', category: 'Narcotic Analgesic', schedule_class: 'X', unit_of_measure: 'vial', reorder_point: 20 } },
+      { id: 'stk-4', product_id: 'p-4', total_quantity: 210, product: { id: 'p-4', sku_code: 'SKU-CETR-10', name: 'Cetirizine 10mg', category: 'Antihistamine', schedule_class: 'N/A', unit_of_measure: 'box', reorder_point: 40 } }
+    ];
+  }
+
+  if (endpoint.includes('/batches')) {
+    return [
+      { id: 'b-1', batch_number: 'B2026-08', quantity: 200, manufacture_date: '2025-01-10', expiry_date: '2027-01-10', status: 'GOOD' },
+      { id: 'b-2', batch_number: 'B2025-11', quantity: 50, manufacture_date: '2024-05-15', expiry_date: '2026-11-15', status: 'EXPIRING_SOON' }
+    ];
+  }
+
+  if (endpoint.includes('/prescriptions')) {
+    return [
+      { id: 'rx-101', prescription_ref: 'RX-2026-8801', patient_id: 'Pt. Ananya Sharma', doctor_name: 'Dr. V. K. Gupta', doctor_registration: 'MCI-884920', status: 'OPEN', items: [{ product_id: 'p-2', quantity: 2 }] },
+      { id: 'rx-102', prescription_ref: 'RX-2026-8802', patient_id: 'Pt. Rahul Verma', doctor_name: 'Dr. S. Mehta', doctor_registration: 'MCI-773194', status: 'OPEN', items: [{ product_id: 'p-3', quantity: 1 }] }
+    ];
+  }
+
+  if (endpoint.includes('/overrides')) {
+    return [
+      { id: 'ov-1', prescription_ref: 'RX-2026-8800', pharmacist_id: 'pharm-01', reason: 'Schedule H Clinical Verification Verified', created_at: '2026-08-25T18:00:00Z' }
+    ];
+  }
+
+  if (endpoint.includes('/transfers')) {
+    return [
+      { id: 'trf-1', transfer_number: 'TRF-9001', source_outlet_id: '11111111-1111-1111-1111-11111111111a', destination_outlet_id: '22222222-2222-2222-2222-22222222222b', status: 'DRAFT', line_items: [{ product_name: 'Amoxicillin 250mg', quantity: 20 }] }
+    ];
+  }
+
+  if (endpoint.includes('/reporting/query')) {
+    return {
+      query: 'Sales overview',
+      columns: ['Outlet', 'Total Sales', 'Orders', 'Margin'],
+      results: [
+        ['Delhi NCR Hub', '$45,820.50', 340, '24.5%'],
+        ['Noida Sector 62', '$28,400.00', 215, '22.1%'],
+        ['Gurgaon Cyber City', '$36,150.25', 280, '25.8%']
+      ]
+    };
+  }
+
+  return options.method === 'POST' ? { id: 'mock-id-' + Date.now(), status: 'SUCCESS', message: 'Action recorded in Demo Mode' } : [];
 }
 
 async function attemptTokenRefresh() {
