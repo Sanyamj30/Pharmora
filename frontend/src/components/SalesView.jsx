@@ -668,7 +668,7 @@ export default function SalesView({ activeOutlet, triggerRefreshAlerts }) {
                 />
                 <button
                   type="button"
-                  onClick={handleCheckLoyalty}
+                  onClick={handleLoyaltyLookup}
                   className="premium-btn premium-btn-secondary"
                   style={{ padding: '8px 16px', fontSize: '0.85rem' }}
                 >
