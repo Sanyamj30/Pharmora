@@ -43,8 +43,7 @@ export default function Navbar({ activeView, setActiveView, user, activeOutlet, 
         {[
           { id: 'dashboard', label: 'Dashboard', roles: ['regional_admin', 'pharmacist', 'inventory_controller', 'finance_manager'] },
           { id: 'inventory', label: 'Inventory', roles: ['regional_admin', 'inventory_controller'] },
-          { id: 'sales', label: 'Sales POS', roles: ['regional_admin', 'pharmacist'] },
-          { id: 'prescriptions', label: 'Prescriptions', roles: ['regional_admin', 'pharmacist'] }
+          { id: 'sales', label: 'Sales POS', roles: ['regional_admin', 'pharmacist'] }
         ].filter(tab => tab.roles.includes(user?.role || 'regional_admin')).map((tab) => {
           const isActive = activeView === tab.id;
           return (

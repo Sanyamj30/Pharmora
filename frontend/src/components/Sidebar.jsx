@@ -5,8 +5,7 @@ export default function Sidebar({ activeView, setActiveView, user, onLogout, mob
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: '📊', roles: ['regional_admin', 'pharmacist', 'inventory_controller', 'finance_manager', 'admin', 'inventory', 'finance'] },
     { id: 'inventory', label: 'Inventory', icon: '📦', roles: ['regional_admin', 'inventory_controller', 'admin', 'inventory'] },
-    { id: 'sales', label: 'Sales POS', icon: '💳', roles: ['regional_admin', 'pharmacist', 'admin'] },
-    { id: 'prescriptions', label: 'Prescriptions', icon: '💊', roles: ['regional_admin', 'pharmacist', 'admin'] }
+    { id: 'sales', label: 'Sales POS', icon: '💳', roles: ['regional_admin', 'pharmacist', 'admin'] }
   ].filter(tab => tab.roles.some(r => userRole.includes(r) || r.includes(userRole) || userRole === 'admin' || userRole === 'regional_admin'));
 
   const handleNavClick = (id) => {

@@ -49,71 +49,11 @@ class TransactionLineItem(Base):
     tax_rate: Mapped[float] = mapped_column(Numeric(5, 4), default=0.0)
     discount_rate: Mapped[float] = mapped_column(Numeric(5, 4), default=0.0)
     line_total: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)
-    prescription_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("prescriptions.id"), nullable=True)
+    prescription_id: Mapped[Optional[uuid.UUID]] = mapped_column(nullable=True)
 
     # Relationships
     transaction: Mapped["Transaction"] = relationship("Transaction", back_populates="line_items")
-    prescription: Mapped[Optional["Prescription"]] = relationship("Prescription")
 
     __table_args__ = (
         CheckConstraint("quantity > 0", name="chk_line_item_quantity"),
     )
-
-
-class Prescription(Base):
-    __tablename__ = "prescriptions"
-
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    prescription_ref: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
-    patient_id_encrypted: Mapped[str] = mapped_column(String, nullable=False) # AES-256 encrypted string
-    doctor_name: Mapped[str] = mapped_column(String(255), nullable=False)
-    doctor_registration: Mapped[str] = mapped_column(String(100), nullable=False)
-    prescription_date: Mapped[date] = mapped_column(Date, nullable=False)
-    status: Mapped[str] = mapped_column(String(20), default="OPEN") # OPEN, PARTIAL, CLOSED
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
-
-    # Relationships
-    items: Mapped[List["PrescriptionItem"]] = relationship(
-        "PrescriptionItem",
-        back_populates="prescription",
-        cascade="all, delete-orphan"
-    )
-
-    @property
-    def patient_id(self) -> str:
-        from services.sales_service.app.crypto import cipher
-        return cipher.decrypt(self.patient_id_encrypted)
-
-    __table_args__ = (
-        CheckConstraint("status IN ('OPEN', 'PARTIAL', 'CLOSED')", name="chk_prescription_status"),
-    )
-
-
-class PrescriptionItem(Base):
-    __tablename__ = "prescription_items"
-
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    prescription_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("prescriptions.id"), nullable=False)
-    product_id: Mapped[uuid.UUID] = mapped_column(nullable=False)
-    prescribed_quantity: Mapped[int] = mapped_column(Integer, nullable=False)
-    dispensed_quantity: Mapped[int] = mapped_column(Integer, default=0)
-    remaining_quantity: Mapped[int] = mapped_column(Integer, nullable=False)
-
-    # Relationships
-    prescription: Mapped["Prescription"] = relationship("Prescription", back_populates="items")
-
-    __table_args__ = (
-        CheckConstraint("prescribed_quantity > 0", name="chk_prescribed_qty"),
-        CheckConstraint("dispensed_quantity >= 0", name="chk_dispensed_qty"),
-        CheckConstraint("remaining_quantity >= 0", name="chk_remaining_qty"),
-    )
-
-
-class ClinicalOverride(Base):
-    __tablename__ = "clinical_overrides"
-
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    prescription_ref: Mapped[str] = mapped_column(String(100), nullable=False)
-    pharmacist_id: Mapped[uuid.UUID] = mapped_column(nullable=False)
-    reason: Mapped[str] = mapped_column(String(255), nullable=False)
-    approved_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)

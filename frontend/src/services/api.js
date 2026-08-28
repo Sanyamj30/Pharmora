@@ -172,23 +172,12 @@ function getOfflineMockResponse(endpoint, options = {}) {
 
   if (endpoint.includes('/batches')) {
     return [
-      { id: 'b-1', batch_number: 'B2026-08', quantity: 200, manufacture_date: '2025-01-10', expiry_date: '2027-01-10', status: 'GOOD' },
-      { id: 'b-2', batch_number: 'B2025-11', quantity: 50, manufacture_date: '2024-05-15', expiry_date: '2026-11-15', status: 'EXPIRING_SOON' }
+      { id: 'b-1', batch_number: 'B2026-08', quantity: 200, manufacture_date: '2025-01-10', expiry_date: '2027-01-10', status: 'ACTIVE' },
+      { id: 'b-2', batch_number: 'B2025-11', quantity: 50, manufacture_date: '2024-05-15', expiry_date: '2026-11-15', status: 'ACTIVE' }
     ];
   }
 
-  if (endpoint.includes('/prescriptions')) {
-    return [
-      { id: 'rx-101', prescription_ref: 'RX-2026-8801', patient_id: 'Pt. Ananya Sharma', doctor_name: 'Dr. V. K. Gupta', doctor_registration: 'MCI-884920', status: 'OPEN', items: [{ product_id: 'p-2', quantity: 2 }] },
-      { id: 'rx-102', prescription_ref: 'RX-2026-8802', patient_id: 'Pt. Rahul Verma', doctor_name: 'Dr. S. Mehta', doctor_registration: 'MCI-773194', status: 'OPEN', items: [{ product_id: 'p-3', quantity: 1 }] }
-    ];
-  }
 
-  if (endpoint.includes('/overrides')) {
-    return [
-      { id: 'ov-1', prescription_ref: 'RX-2026-8800', pharmacist_id: 'pharm-01', reason: 'Schedule H Clinical Verification Verified', created_at: '2026-08-25T18:00:00Z' }
-    ];
-  }
 
   if (endpoint.includes('/transfers')) {
     return [
@@ -349,38 +338,7 @@ export const api = {
     return await request(`/sales/invoices/${invoiceNumber}`);
   },
   
-  registerPrescription: async (prescriptionData) => {
-    return await request('/sales/prescriptions', {
-      method: 'POST',
-      body: JSON.stringify(prescriptionData)
-    });
-  },
-  
-  getPrescription: async (ref) => {
-    return await request(`/sales/prescriptions/${ref}`);
-  },
-  
-  dispensePrescription: async (ref, dispenseData) => {
-    return await request(`/sales/prescriptions/${ref}/dispense`, {
-      method: 'POST',
-      body: JSON.stringify(dispenseData)
-    });
-  },
-  
-  listPrescriptions: async () => {
-    return await request('/sales/prescriptions');
-  },
-  
-  listOverrides: async () => {
-    return await request('/sales/overrides');
-  },
-  
-  createOverride: async (overrideData) => {
-    return await request('/sales/overrides', {
-      method: 'POST',
-      body: JSON.stringify(overrideData)
-    });
-  },
+
 
   listRecommendations: async (outletId) => {
     return await request(`/inventory/${outletId}/recommendations`);

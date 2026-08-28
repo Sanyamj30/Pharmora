@@ -6,7 +6,6 @@ import LoginView from './components/LoginView';
 import DashboardView from './components/DashboardView';
 import InventoryView from './components/InventoryView';
 import SalesView from './components/SalesView';
-import PrescriptionView from './components/PrescriptionView';
 import { ToastProvider } from './components/Toast';
 import { getAuthUser, clearAuth, api } from './services/api';
 
@@ -123,12 +122,6 @@ function AppContent() {
             <SalesView
               activeOutlet={activeOutlet}
               triggerRefreshAlerts={refreshAlerts}
-            />
-          )}
-
-          {activeView === 'prescriptions' && (
-            <PrescriptionView
-              activeOutlet={activeOutlet}
             />
           )}
         </main>

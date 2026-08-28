@@ -20,7 +20,6 @@ export default function SalesView({ activeOutlet, triggerRefreshAlerts }) {
   const [selectedProdId, setSelectedProdId] = useState('');
   const [itemQty, setItemQty] = useState(1);
   const [itemPrice, setItemPrice] = useState(10.0);
-  const [prescriptionRef, setPrescriptionRef] = useState('');
 
   // Search autocomplete states
   const [searchQuery, setSearchQuery] = useState('');
@@ -30,10 +29,6 @@ export default function SalesView({ activeOutlet, triggerRefreshAlerts }) {
   const [loyaltyPhone, setLoyaltyPhone] = useState('');
   const [loyaltyProfile, setLoyaltyProfile] = useState(null);
   const [useLoyaltyPoints, setUseLoyaltyPoints] = useState(false);
-
-  // Prescription lookup states
-  const [prescSearchRef, setPrescSearchRef] = useState('');
-  const [activePrescription, setActivePrescription] = useState(null);
 
   // Active transaction / printable receipt state
   const [activeInvoice, setActiveInvoice] = useState(null);
@@ -64,70 +59,85 @@ export default function SalesView({ activeOutlet, triggerRefreshAlerts }) {
     e.preventDefault();
     setError('');
     
-    if (!selectedProdId) {
-      setError('Please select a product.');
+    let prodIdToUse = selectedProdId;
+
+    // Fallback: auto-match product from search query if selectedProdId is empty or out of sync
+    if (!prodIdToUse && searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      const matched = stockList.find(s =>
+        s.product.name.toLowerCase() === q ||
+        s.product.sku_code.toLowerCase() === q ||
+        `${s.product.name} (${s.product.sku_code})`.toLowerCase() === q ||
+        s.product.name.toLowerCase().includes(q) ||
+        s.product.sku_code.toLowerCase().includes(q)
+      );
+      if (matched) {
+        prodIdToUse = matched.product_id;
+        setSelectedProdId(matched.product_id);
+      }
+    }
+
+    if (!prodIdToUse) {
+      setError('Please select a valid product from the dropdown list.');
       return;
     }
 
-    const stockItem = stockList.find(s => s.product_id === selectedProdId);
-    if (!stockItem) return;
+    const stockItem = stockList.find(s => s.product_id === prodIdToUse);
+    if (!stockItem) {
+      setError('Selected product not found in inventory.');
+      return;
+    }
 
-    if (stockItem.total_quantity < itemQty) {
+    const parsedQty = parseInt(itemQty) || 1;
+
+    if (stockItem.total_quantity < parsedQty) {
       setError(`Insufficient overall inventory. Available: ${stockItem.total_quantity} units.`);
-      return;
-    }
-
-    // Regulated Drug Validation Check
-    const isRegulated = stockItem.product.schedule_class === 'H' || stockItem.product.schedule_class === 'X';
-    if (isRegulated && !prescriptionRef.trim()) {
-      setError(`Compliance Error: SKU ${stockItem.product.sku_code} is a Schedule ${stockItem.product.schedule_class} regulated drug. A valid Prescription Reference is strictly required.`);
       return;
     }
 
     try {
       // FEFO Batch Auto-Selection Check
-      const batches = await api.listFEFOBatches(activeOutlet, selectedProdId);
-      const activeBatches = batches.filter(b => b.status === 'ACTIVE');
+      const batches = await api.listFEFOBatches(activeOutlet, prodIdToUse);
+      const activeBatches = batches.filter(b => b.status === 'ACTIVE' || b.status === 'GOOD' || b.status === 'EXPIRING_SOON');
       if (activeBatches.length === 0) {
         throw new Error('No active batches available for this product.');
       }
       
       // Auto-assign to first expiring active batch (FEFO)
       const selectedBatch = activeBatches[0];
-      if (selectedBatch.quantity < itemQty) {
+      if (selectedBatch.quantity < parsedQty) {
         setError(`Selected FEFO batch #${selectedBatch.batch_number} only has ${selectedBatch.quantity} units remaining. Please adjust quantity.`);
         return;
       }
 
       const existingCartItem = cart.find(
-        (c) => c.product_id === selectedProdId && c.batch_id === selectedBatch.id
+        (c) => c.product_id === prodIdToUse && c.batch_id === selectedBatch.id
       );
 
       if (existingCartItem) {
-        setError('Item already exists in cart. Remove first to adjust.');
+        setError('Item already exists in cart. Remove first to adjust quantity.');
         return;
       }
 
       const cartItem = {
-        product_id: selectedProdId,
+        product_id: prodIdToUse,
         product_name: stockItem.product.name,
         sku_code: stockItem.product.sku_code,
         schedule_class: stockItem.product.schedule_class,
         batch_id: selectedBatch.id,
         batch_number: selectedBatch.batch_number,
-        quantity: parseInt(itemQty),
-        unit_price: parseFloat(itemPrice),
-        prescription_ref: prescriptionRef.trim() || null
+        quantity: parsedQty,
+        unit_price: parseFloat(itemPrice) || 10.0
       };
 
       setCart([...cart, cartItem]);
-      // Reset POS inputs
+      // Reset POS inputs including search query
       setSelectedProdId('');
+      setSearchQuery('');
       setItemQty(1);
       setItemPrice(10.0);
-      setPrescriptionRef('');
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Failed to add item to cart.');
     }
   };
 
@@ -176,55 +186,6 @@ export default function SalesView({ activeOutlet, triggerRefreshAlerts }) {
       tier: simulatedPoints > 200 ? 'Gold Elite' : 'Silver Member'
     });
     setSuccess(`Loyalty profile found for ${name}!`);
-  };
-
-  const handleFetchPrescription = async (e) => {
-    e.preventDefault();
-    if (!prescSearchRef.trim()) {
-      setError('Please enter a prescription reference.');
-      return;
-    }
-    setError('');
-    setSuccess('');
-    try {
-      const presc = await api.getPrescription(prescSearchRef.trim());
-      if (!presc) {
-        setError('Prescription reference not found.');
-        return;
-      }
-      setActivePrescription(presc);
-      
-      // Auto-populate cart with prescription items
-      const newCart = [];
-      for (const item of presc.items) {
-        // Find matching product in stock list
-        const stockItem = stockList.find(s => s.product.sku_code === item.product_sku || s.product_id === item.product_id);
-        if (!stockItem) continue;
-        
-        // Find FEFO batches
-        const batches = await api.listFEFOBatches(activeOutlet, stockItem.product_id);
-        const activeBatches = batches.filter(b => b.status === 'ACTIVE');
-        if (activeBatches.length === 0) continue;
-        const selectedBatch = activeBatches[0];
-        
-        newCart.push({
-          product_id: stockItem.product_id,
-          product_name: stockItem.product.name,
-          sku_code: stockItem.product.sku_code,
-          schedule_class: stockItem.product.schedule_class,
-          batch_id: selectedBatch.id,
-          batch_number: selectedBatch.batch_number,
-          quantity: item.quantity,
-          unit_price: parseFloat(item.unit_price || 12.5),
-          prescription_ref: prescSearchRef.trim()
-        });
-      }
-      setCart(newCart);
-      setPrescriptionRef(prescSearchRef.trim());
-      setSuccess(`Prescription loaded for patient: ${presc.patient_name || 'N/A'}. Cart populated.`);
-    } catch (err) {
-      setError(err.message || 'Failed to load prescription.');
-    }
   };
 
   const handleApplyPromo = (e) => {
@@ -276,24 +237,11 @@ export default function SalesView({ activeOutlet, triggerRefreshAlerts }) {
           product_id: item.product_id,
           batch_id: item.batch_id,
           quantity: item.quantity,
-          unit_price: item.unit_price,
-          prescription_ref: item.prescription_ref
+          unit_price: item.unit_price
         }))
       };
 
       const result = await api.createTransaction(payload);
-
-      // Handle prescription dispensing updates on successful POS checkout
-      if (activePrescription && prescriptionRef) {
-        const user = api.getAuthUser();
-        try {
-          await api.dispensePrescription(prescriptionRef, {
-            dispensed_by: user ? user.sub : "00000000-0000-0000-0000-000000000000"
-          });
-        } catch (prescErr) {
-          console.error("Prescription dispensing error:", prescErr);
-        }
-      }
 
       // Handle loyalty balance updates
       let pointsEarned = Math.floor(subtotal / 10);
@@ -340,7 +288,6 @@ export default function SalesView({ activeOutlet, triggerRefreshAlerts }) {
       setAppliedPromo(null);
       setPromoCode('');
       setUseLoyaltyPoints(false);
-      setActivePrescription(null);
       fetchProducts();
       triggerRefreshAlerts();
     } catch (err) {
@@ -375,7 +322,7 @@ export default function SalesView({ activeOutlet, triggerRefreshAlerts }) {
       <div>
         <h2 style={{ fontSize: '1.5rem', marginBottom: '4px' }}>POS Terminal Cashier</h2>
         <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-          Process sales checkouts, match FEFO batches, verify doctor prescriptions, and generate invoices.
+          Process sales checkouts, match FEFO batches, and generate invoices.
         </p>
       </div>
 
@@ -415,43 +362,7 @@ export default function SalesView({ activeOutlet, triggerRefreshAlerts }) {
         {/* Left Side: Product selection & Cart */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
-          {/* Prescription Quick Lookup */}
-          <div className="glass-card">
-            <h3 style={{ marginBottom: '12px' }}>Verify & Load Doctor Prescription</h3>
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <input
-                type="text"
-                placeholder="Enter Prescription Reference Code..."
-                className="premium-input"
-                value={prescSearchRef}
-                onChange={(e) => setPrescSearchRef(e.target.value)}
-                style={{ flex: 1 }}
-              />
-              <button 
-                type="button" 
-                onClick={handleFetchPrescription}
-                className="premium-button"
-                style={{ padding: '0 20px' }}
-              >
-                Load Rx
-              </button>
-            </div>
-            {activePrescription && (
-              <div style={{
-                marginTop: '12px',
-                padding: '10px',
-                backgroundColor: 'rgba(99, 102, 241, 0.08)',
-                borderLeft: '4px solid var(--accent)',
-                borderRadius: '4px',
-                fontSize: '0.85rem'
-              }}>
-                <div style={{ fontWeight: 600 }}>Patient: {activePrescription.patient_name}</div>
-                <div style={{ color: 'var(--text-secondary)' }}>Doctor: {activePrescription.doctor_name} | Status: {activePrescription.status}</div>
-              </div>
-            )}
-          </div>
-
-          {/* Add Item form */}
+              {/* Add Item form */}
           <div className="glass-card">
             <h3 style={{ marginBottom: '16px' }}>Add Item to Cart</h3>
             <form onSubmit={handleAddToCart} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -538,39 +449,6 @@ export default function SalesView({ activeOutlet, triggerRefreshAlerts }) {
                 </div>
               </div>
 
-              {/* Show prescription field conditionally if product selected is regulated */}
-              {selectedProdId && (
-                (() => {
-                  const selected = stockList.find(s => s.product_id === selectedProdId);
-                  const isRegulated = selected?.product.schedule_class === 'H' || selected?.product.schedule_class === 'X';
-                  
-                  if (isRegulated) {
-                    return (
-                      <div className="premium-input-container animate-fade-in" style={{
-                        background: 'rgba(239, 68, 68, 0.05)',
-                        border: '1px dashed rgba(239, 68, 68, 0.3)',
-                        borderRadius: '8px',
-                        padding: '16px'
-                      }}>
-                        <label className="premium-label" style={{ color: 'var(--critical)' }}>
-                          ⚠️ Regulated Drug: Doctor Prescription Ref Code Required
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          placeholder="e.g. RX-2026-991A"
-                          className="premium-input"
-                          style={{ borderColor: 'rgba(239, 68, 68, 0.4)' }}
-                          value={prescriptionRef}
-                          onChange={(e) => setPrescriptionRef(e.target.value)}
-                        />
-                      </div>
-                    );
-                  }
-                  return null;
-                })()
-              )}
-
               <button type="submit" className="premium-btn premium-btn-secondary" style={{ width: '100%' }}>
                 ➕ Insert Item to Cart
               </button>
@@ -595,7 +473,6 @@ export default function SalesView({ activeOutlet, triggerRefreshAlerts }) {
                       <th>Qty</th>
                       <th>Unit Price</th>
                       <th>Total</th>
-                      <th>Prescription</th>
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -604,20 +481,10 @@ export default function SalesView({ activeOutlet, triggerRefreshAlerts }) {
                       <tr key={index}>
                         <td style={{ fontWeight: 600 }}>{item.product_name}</td>
                         <td style={{ fontFamily: 'var(--font-mono)' }}>{item.sku_code}</td>
+                        <td>{item.batch_number}</td>
                         <td>{item.quantity}</td>
                         <td>₹{item.unit_price.toFixed(2)}</td>
                         <td style={{ fontWeight: 'bold' }}>₹{(item.quantity * item.unit_price).toFixed(2)}</td>
-                        <td>
-                          {item.prescription_ref ? (
-                            <span className="premium-badge badge-success" style={{ fontSize: '0.7rem' }}>
-                              Ref: {item.prescription_ref}
-                            </span>
-                          ) : (
-                            <span className="premium-badge badge-info" style={{ fontSize: '0.7rem' }}>
-                              None
-                            </span>
-                          )}
-                        </td>
                         <td>
                           <button
                             onClick={() => handleRemoveFromCart(index)}

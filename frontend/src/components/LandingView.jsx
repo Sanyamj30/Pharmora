@@ -194,7 +194,7 @@ export default function LandingView({ onLoginClick }) {
             <span style={{ color: 'var(--accent-gold)' }}>Pharmacy Operations</span>
           </h1>
           <p style={{ fontSize: '1.1rem', color: '#475569', maxWidth: '580px', lineHeight: '1.65' }}>
-            Pharmora orchestrates enterprise retail pharmacy workflows across regional multi-branch hubs. Fully integrated with automated FEFO batch allocation, medical prescription verification, and zero-loss stock transfer enforcement.
+            Pharmora orchestrates enterprise retail pharmacy workflows across regional multi-branch hubs. Fully integrated with automated FEFO batch allocation, medicine checkout verification, and zero-loss stock transfer enforcement.
           </p>
           <div style={{ display: 'flex', gap: '16px', marginTop: '8px' }}>
             <button onClick={onLoginClick} className="premium-btn premium-btn-primary" style={{ padding: '12px 28px', fontSize: '0.95rem' }}>
@@ -329,10 +329,10 @@ export default function LandingView({ onLoginClick }) {
               GxP Audited
             </div>
             <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#0f172a', marginTop: '6px' }}>
-              Schedule H/X Compliance
+              Direct Medicine POS Sales
             </div>
             <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '2px' }}>
-              Digital autograph & override trail
+              Instant billing & inventory tracking
             </div>
           </div>
         </div>
@@ -376,9 +376,9 @@ export default function LandingView({ onLoginClick }) {
             }}>
               📑
             </div>
-            <h3 style={{ fontSize: '1.15rem', color: '#0f172a', fontWeight: 700 }}>Prescription Validation</h3>
+            <h3 style={{ fontSize: '1.15rem', color: '#0f172a', fontWeight: 700 }}>POS Sales Billing</h3>
             <p style={{ fontSize: '0.88rem', color: '#475569', flexGrow: 1, lineHeight: '1.6' }}>
-              Enforces real-time validation of doctor prescriptions, checks quantity thresholds, and logs clinical overrides to guarantee GxP regulatory compliance.
+              Enforces real-time medicine POS billing, checks quantity thresholds, and applies loyalty discounts with instant stock deducts.
             </p>
           </div>
 

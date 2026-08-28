@@ -6,8 +6,7 @@ export default function Header({ activeView, activeOutlet, setActiveOutlet, user
   const viewTitles = {
     dashboard: { title: 'Operational Overview', subtitle: 'Real-time telemetry, audit stats, and quick actions' },
     inventory: { title: 'Inventory Control & Batches', subtitle: 'Track stock levels, FEFO expiration audits, and product catalog' },
-    sales: { title: 'Sales & POS Terminal', subtitle: 'Process compliant customer checkouts and active invoices' },
-    prescriptions: { title: 'Prescriptions & Compliance', subtitle: 'Validate medical prescriptions and dosage authorizations' }
+    sales: { title: 'Sales & POS Terminal', subtitle: 'Process customer checkouts and active invoices' }
   };
 
   const currentMeta = viewTitles[activeView] || { title: 'Dashboard', subtitle: 'Manage your pharmacy operations' };
